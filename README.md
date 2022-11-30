@@ -6,8 +6,8 @@ Status:
 
 
 Code that runs the core stack on the Duckiebot in ROS.
-<<<<<<< HEAD
-Test
+<<<<<< HEAD
+
 =======
 
 
