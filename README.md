@@ -6,4 +6,10 @@ Status:
 
 
 Code that runs the core stack on the Duckiebot in ROS.
+<<<<<<< HEAD
 Test
+=======
+
+
+test commit
+>>>>>>> 35258ff9715e3fc70e0e1144bbbf4ec809108c9c
