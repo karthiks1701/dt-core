@@ -18,3 +18,4 @@ omega_min_right: -2.5
 omega_max_right: 999
 
 debug_dir: -1
+standalone: True

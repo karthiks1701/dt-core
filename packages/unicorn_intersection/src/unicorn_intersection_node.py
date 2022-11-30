@@ -39,6 +39,8 @@ class UnicornIntersectionNode:
         ## update Parameters timer
         self.params_update = rospy.Timer(rospy.Duration.from_sec(1.0), self.updateParams)
 
+        self.standalone = rospy.get_param("~standalone")
+
     def cbLanePose(self, msg):
         if self.forward_pose:
             self.pub_lane_pose.publish(msg)
@@ -103,10 +105,19 @@ class UnicornIntersectionNode:
         self.pub_int_done_detailed.publish(msg_done_detailed)
 
     def cbFSMState(self, msg):
-        if self.state != msg.state and msg.state == "INTERSECTION_COORDINATION":
+        rospy.loginfo("[%s] State machine called us, our state %s, msg state %s", self.node_name, self.state, msg.state)
+        if self.state != msg.state and msg.state == "INTERSECTION_NAVIGATION":
             self.turn_type = -1
 
         self.state = msg.state
+
+        if self.standalone:
+            rospy.loginfo("[%s] is running in the standalone setup", self.node_name)
+            self.turn_type = 0
+            msg_go = BoolStamped()
+            msg_go.data = True
+            self.cbIntersectionGo(msg_go)
+
 
     def cbSwitch(self, switch_msg):
         self.active = switch_msg.data
@@ -155,6 +166,7 @@ class UnicornIntersectionNode:
         self.omega_min_right = rospy.get_param("~omega_min_right")
 
         self.debug_dir = rospy.get_param("~debug_dir")
+        self.standalone = rospy.get_param("~standalone")
 
     def setupParam(self, param_name, default_value):
         value = rospy.get_param(param_name, default_value)
