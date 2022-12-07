@@ -36,10 +36,11 @@ class UnicornIntersectionNode:
             "~intersection_done_detailed", TurnIDandType, queue_size=1
         )
 
+        self.standalone = rospy.get_param("~standalone")
         ## update Parameters timer
         self.params_update = rospy.Timer(rospy.Duration.from_sec(1.0), self.updateParams)
 
-        self.standalone = rospy.get_param("~standalone")
+        
 
     def cbLanePose(self, msg):
         if self.forward_pose:
@@ -54,13 +55,16 @@ class UnicornIntersectionNode:
     def cbIntersectionGo(self, msg):
         rospy.loginfo("[%s] Recieved intersection go message from coordinator", self.node_name)
         if not self.active:
+            rospy.loginfo("[%s] we are not active", self.node_name)
             return
 
         if not msg.data:
+            rospy.loginfo("[%s] we received no go message", self.node_name)
             return
 
         while self.turn_type == -1:
             if not self.active:
+                rospy.loginfo("[%s] we are not active", self.node_name)
                 return
             rospy.loginfo(
                 "[%s] Requested to start intersection, but we do not see an april tag yet.", self.node_name
@@ -111,15 +115,19 @@ class UnicornIntersectionNode:
 
         self.state = msg.state
 
+        self.standalone = rospy.get_param("~standalone")
+
         if self.standalone:
             rospy.loginfo("[%s] is running in the standalone setup", self.node_name)
             self.turn_type = 0
             msg_go = BoolStamped()
             msg_go.data = True
+            self.active = True
             self.cbIntersectionGo(msg_go)
 
 
     def cbSwitch(self, switch_msg):
+        rospy.loginfo("[%s] received a %s switch message", self.node_name, switch_msg.data)
         self.active = switch_msg.data
 
     def cbTurnType(self, msg):

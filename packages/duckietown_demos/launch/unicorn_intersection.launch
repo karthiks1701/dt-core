@@ -16,10 +16,6 @@
 
 		<!-- Camera and anti intagram -->
 		<arg name="anti_instagram" value="true" />
-
-		<!-- Deadreckoning (aka. Odometry)	-->
-		<arg name="/localization" value="true"/>
-		<arg name="/localization/deadreckoning" value="true"/>
 		
 		<!--unicorn_intersection -->
 		<arg name="unicorn_intersection" value="true"/>
@@ -31,6 +27,10 @@
 	    <arg name="/lane_following/ground_projection" value="true"/>
 	    <arg name="/lane_following/lane_filter" value="true"/>
 	    <arg name="/lane_following/lane_controller" value="true"/>
+
+		<!-- Deadreckoning (aka. Odometry)	-->
+		<arg name="/localization" value="false"/>
+		<arg name="/localization/deadreckoning" value="false"/>
 
   	</include>
 

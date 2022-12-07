@@ -10,6 +10,12 @@ events: # Maps from subscribing topic to signal ids
     topic: "joy_mapper_node/joystick_override"
     msg_type: "BoolStamped"
     trigger: False
+
+
+  intersection_done: ## closed loop new
+    topic: "unicorn_intersection_node/intersection_done"
+    msg_type: "BoolStamped"
+    trigger: True
   obstacle_exists:
     topic: "road_anomaly_watcher/obstacle_exists"
     msg_type: "BoolStamped"
@@ -43,6 +49,8 @@ global_transitions:
 
 states:
   INTERSECTION_NAVIGATION:
+    transitions:
+      intersection_done: "LANE_FOLLOWING"
     active_nodes:
       - anti_instagram
       - decoder_node

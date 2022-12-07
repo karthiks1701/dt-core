@@ -122,6 +122,7 @@ class LaneControllerNode(DTROS):
         )
 
         self.log("Initialized!")
+        rospy.loginfo("I was initilized")
 
     def cbObstacleStopLineReading(self, msg):
         """
