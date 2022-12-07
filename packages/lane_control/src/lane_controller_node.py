@@ -93,7 +93,7 @@ class LaneControllerNode(DTROS):
         self.obstacle_stop_line_detected = False
         self.at_obstacle_stop_line = False
 
-        self.current_pose_source = "lane_filter"
+        self.current_pose_source = "intersection_navigation"
 
         # Construct publishers
         self.pub_car_cmd = rospy.Publisher(
@@ -149,6 +149,8 @@ class LaneControllerNode(DTROS):
 
         self.fsm_state = fsm_state_msg.state  # String of current FSM state
 
+        rospy.loginfo(" We received an fsm state %s", fsm_state_msg.state)
+
         if self.fsm_state == "INTERSECTION_CONTROL":
             self.current_pose_source = "intersection_navigation"
         else:
@@ -166,8 +168,10 @@ class LaneControllerNode(DTROS):
             input_pose_msg (:obj:`LanePose`): Message containing information about the current lane pose.
             pose_source (:obj:`String`): Source of the message, specified in the subscriber.
         """
+        rospy.loginfo("  input pose d %s, phi %s",input_pose_msg.d, input_pose_msg.phi)
 
         if pose_source == self.current_pose_source:
+            rospy.loginfo("  please work pose_source %s, self.current_pose_source %s", pose_source, self.current_pose_source)
             self.pose_msg_dict[pose_source] = input_pose_msg
 
             self.pose_msg = input_pose_msg
@@ -181,6 +185,7 @@ class LaneControllerNode(DTROS):
             msg_wheels_cmd (:obj:`WheelsCmdStamped`): Executed wheel commands
         """
         self.wheels_cmd_executed = msg_wheels_cmd
+        rospy.loginfo("Wheels command executed")
 
     def publishCmd(self, car_cmd_msg):
         """Publishes a car command message.
@@ -188,6 +193,7 @@ class LaneControllerNode(DTROS):
         Args:
             car_cmd_msg (:obj:`Twist2DStamped`): Message containing the requested control action.
         """
+        rospy.loginfo("Commands car sent %s, %s", str(car_cmd_msg.v), str(car_cmd_msg.omega))
         self.pub_car_cmd.publish(car_cmd_msg)
 
     def getControlAction(self, pose_msg):

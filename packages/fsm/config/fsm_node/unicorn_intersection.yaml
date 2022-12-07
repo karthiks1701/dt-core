@@ -1,5 +1,5 @@
 # Initial state of the FSM
-initial_state: "INTERSECTION_NAVIGATION"
+initial_state: "INTERSECTION_CONTROL"
 
 events: # Maps from subscribing topic to signal ids
   joystick_override_on:
@@ -45,10 +45,10 @@ nodes:
 
 global_transitions:
   joystick_override_on: "NORMAL_JOYSTICK_CONTROL"
-  joystick_override_off: "INTERSECTION_NAVIGATION"
+  joystick_override_off: "INTERSECTION_CONTROL"
 
 states:
-  INTERSECTION_NAVIGATION:
+  INTERSECTION_CONTROL:
     transitions:
       intersection_done: "LANE_FOLLOWING"
     active_nodes:

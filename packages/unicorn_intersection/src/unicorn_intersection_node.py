@@ -43,6 +43,7 @@ class UnicornIntersectionNode:
         
 
     def cbLanePose(self, msg):
+        rospy.loginfo("We received a pose")
         if self.forward_pose:
             self.pub_lane_pose.publish(msg)
 
@@ -90,6 +91,14 @@ class UnicornIntersectionNode:
         rospy.loginfo("Starting intersection control - driving to " + str(turn_type))
         self.forward_pose = True
 
+        if self.standalone:
+            rospy.loginfo("[%s] foward true ", self.node_name)
+
+            msg_pose = LanePose()
+            msg_pose.d = 0
+            msg_pose.phi = 0
+            self.cbLanePose(msg_pose)
+
         rospy.sleep(sleeptimes[turn_type])
 
         self.forward_pose = False
@@ -110,7 +119,7 @@ class UnicornIntersectionNode:
 
     def cbFSMState(self, msg):
         rospy.loginfo("[%s] State machine called us, our state %s, msg state %s", self.node_name, self.state, msg.state)
-        if self.state != msg.state and msg.state == "INTERSECTION_NAVIGATION":
+        if self.state != msg.state and msg.state == "INTERSECTION_CONTROL": #"INTERSECTION_CONTROL":
             self.turn_type = -1
 
         self.state = msg.state
