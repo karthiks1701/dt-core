@@ -126,7 +126,7 @@ class UnicornIntersectionNode:
 
         self.standalone = rospy.get_param("~standalone")
 
-        if self.standalone:
+        if self.standalone and not self.forward_pose:
             rospy.loginfo("[%s] is running in the standalone setup", self.node_name)
             self.turn_type = 0
             msg_go = BoolStamped()
