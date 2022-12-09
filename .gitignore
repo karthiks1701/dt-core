@@ -12,3 +12,6 @@ out
 .bumpversion.cfg
 .dockerignore
 .dtproject
+
+# IDE specific files
+**/.idea
