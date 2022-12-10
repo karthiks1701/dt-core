@@ -122,7 +122,7 @@ class LaneControllerNode(DTROS):
         )
 
         self.log("Initialized!")
-        rospy.loginfo("I was initilized")
+        rospy.loginfo("I was initilized omega %s", str(self.params["~omega_ff"]))
 
     def cbObstacleStopLineReading(self, msg):
         """
@@ -185,7 +185,6 @@ class LaneControllerNode(DTROS):
             msg_wheels_cmd (:obj:`WheelsCmdStamped`): Executed wheel commands
         """
         self.wheels_cmd_executed = msg_wheels_cmd
-        rospy.loginfo("Wheels command executed")
 
     def publishCmd(self, car_cmd_msg):
         """Publishes a car command message.
@@ -238,6 +237,8 @@ class LaneControllerNode(DTROS):
                 )
 
             # For feedforward action (i.e. during intersection navigation)
+            self.params["~omega_ff"] = rospy.get_param("~omega_ff", None)
+            rospy.loginfo("current computed omega %s sent omega_ff %s",str(omega), str(self.params["~omega_ff"]))
             omega += self.params["~omega_ff"]
 
         # Initialize car control msg, add header from input message

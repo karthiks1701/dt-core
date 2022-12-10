@@ -101,15 +101,22 @@ class UnicornIntersectionNode:
 
         rospy.sleep(sleeptimes[turn_type])
 
-        self.forward_pose = False
         rospy.set_param("~lane_controller/omega_ff", 0)
         rospy.set_param("~lane_controller/omega_max", 999)
         rospy.set_param("~lane_controller/omega_min", -999)
+
+        if self.standalone:
+            rospy.loginfo("[%s] trying to make it stop ", self.node_name)
+            self.cbLanePose(msg_pose)
+
+        self.forward_pose = False
 
         # Publish intersection done
         msg_done = BoolStamped()
         msg_done.data = True
         self.pub_int_done.publish(msg_done)
+
+        rospy.loginfo("Intersection navigation done")
 
         # Publish intersection done detailed
         msg_done_detailed = TurnIDandType()
@@ -119,25 +126,25 @@ class UnicornIntersectionNode:
 
     def cbFSMState(self, msg):
         rospy.loginfo("[%s] State machine called us, our state %s, msg state %s", self.node_name, self.state, msg.state)
-        if self.state != msg.state and msg.state == "INTERSECTION_CONTROL": #"INTERSECTION_CONTROL":
+        if self.state != msg.state and msg.state == "INTERSECTION_CONTROL" and not self.standalone: #"INTERSECTION_CONTROL":
             self.turn_type = -1
 
         self.state = msg.state
 
-        self.standalone = rospy.get_param("~standalone")
-
-        if self.standalone and not self.forward_pose:
-            rospy.loginfo("[%s] is running in the standalone setup", self.node_name)
-            self.turn_type = 0
-            msg_go = BoolStamped()
-            msg_go.data = True
-            self.active = True
-            self.cbIntersectionGo(msg_go)
 
 
     def cbSwitch(self, switch_msg):
         rospy.loginfo("[%s] received a %s switch message", self.node_name, switch_msg.data)
         self.active = switch_msg.data
+        self.standalone = rospy.get_param("~standalone")
+        if self.active and self.standalone:
+            if self.standalone and not self.forward_pose:
+                rospy.loginfo("[%s] is running in the standalone setup", self.node_name)
+                self.turn_type = 0
+                msg_go = BoolStamped()
+                msg_go.data = True
+                self.active = True
+                self.cbIntersectionGo(msg_go)
 
     def cbTurnType(self, msg):
         self.tag_id = msg.tag_id

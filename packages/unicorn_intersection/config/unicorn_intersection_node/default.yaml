@@ -2,7 +2,7 @@ time_left_turn: 3.2
 time_straight_turn: 3
 time_right_turn: 1.5
 
-ff_left: 0.9
+ff_left: 0.4
 ff_straight: 0
 ff_right: -0.6
 

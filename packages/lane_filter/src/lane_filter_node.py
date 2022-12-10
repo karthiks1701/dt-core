@@ -90,6 +90,8 @@ class LaneFilterNode(DTROS):
         #     "~switch", BoolStamped, self.cbSwitch, queue_size=1)
         self.sub_fsm_mode = rospy.Subscriber("~fsm_mode", FSMState, self.cbMode, queue_size=1)
 
+        rospy.loginfo("lane filter init")
+
     def cbTemporaryChangeParams(self, msg):
         """Callback that changes temporarily the filter's parameters.
 
@@ -100,6 +102,7 @@ class LaneFilterNode(DTROS):
         # This weird callback changes parameters only temporarily - used in the unicorn intersection.
         # comment from 03/2020
         data = json.loads(msg.data)
+        rospy.loginfo("This is the params sent to the lane filter %s", msg.data)
         params = data["params"]
         reset_time = data["time"]
         # Set all paramters which need to be updated
