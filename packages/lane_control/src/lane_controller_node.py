@@ -97,7 +97,7 @@ class LaneControllerNode(DTROS):
 
         # Construct publishers
         self.pub_car_cmd = rospy.Publisher(
-            "~car_cmd", Twist2DStamped, queue_size=1, dt_topic_type=TopicType.CONTROL
+            "car_cmd_switch_node/cmd", Twist2DStamped, queue_size=1, dt_topic_type=TopicType.CONTROL
         )
 
         # Construct subscribers
@@ -122,7 +122,6 @@ class LaneControllerNode(DTROS):
         )
 
         self.log("Initialized!")
-        rospy.loginfo("I was initilized omega %s", str(self.params["~omega_ff"]))
 
     def cbObstacleStopLineReading(self, msg):
         """
@@ -168,10 +167,8 @@ class LaneControllerNode(DTROS):
             input_pose_msg (:obj:`LanePose`): Message containing information about the current lane pose.
             pose_source (:obj:`String`): Source of the message, specified in the subscriber.
         """
-        rospy.loginfo("  input pose d %s, phi %s",input_pose_msg.d, input_pose_msg.phi)
 
         if pose_source == self.current_pose_source:
-            rospy.loginfo("  please work pose_source %s, self.current_pose_source %s", pose_source, self.current_pose_source)
             self.pose_msg_dict[pose_source] = input_pose_msg
 
             self.pose_msg = input_pose_msg
@@ -192,7 +189,7 @@ class LaneControllerNode(DTROS):
         Args:
             car_cmd_msg (:obj:`Twist2DStamped`): Message containing the requested control action.
         """
-        rospy.loginfo("Commands car sent %s, %s", str(car_cmd_msg.v), str(car_cmd_msg.omega))
+        #rospy.loginfo("Commands car sent %s, %s", str(car_cmd_msg.v), str(car_cmd_msg.omega))
         self.pub_car_cmd.publish(car_cmd_msg)
 
     def getControlAction(self, pose_msg):

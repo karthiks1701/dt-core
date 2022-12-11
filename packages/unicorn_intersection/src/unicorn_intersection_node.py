@@ -38,7 +38,7 @@ class UnicornIntersectionNode:
 
         self.standalone = rospy.get_param("~standalone")
         ## update Parameters timer
-        self.params_update = rospy.Timer(rospy.Duration.from_sec(1.0), self.updateParams)
+        self.params_update = rospy.Timer(rospy.Duration.from_sec(0.05), self.updateParams)
 
         
 
@@ -140,7 +140,7 @@ class UnicornIntersectionNode:
         if self.active and self.standalone:
             if self.standalone and not self.forward_pose:
                 rospy.loginfo("[%s] is running in the standalone setup", self.node_name)
-                self.turn_type = 0
+                self.turn_type = 2
                 msg_go = BoolStamped()
                 msg_go.data = True
                 self.active = True
