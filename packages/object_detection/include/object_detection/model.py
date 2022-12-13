@@ -2,6 +2,12 @@ import os
 from typing import Tuple
 import numpy as np
 import torch
+import subprocess
+process = subprocess.Popen(['pip', 'install', 'dt-data-api-daffy>=0.1.8'])
+process.wait()
+
+process = subprocess.Popen(['pip', 'install', 'ipython'])
+process.wait()
 from dt_data_api import DataClient
 from dt_device_utils import DeviceHardwareBrand, get_device_hardware_brand
 import rospy
@@ -114,8 +120,8 @@ class Model:
         # Todo: Dirty hack to not trigger the hole rebuilt, -> switch to normal installation
         # process = subprocess.Popen(['pip', 'install', 'torchvision==0.8.1'])
         # process.wait()
-        model = torch.hub.load("/yolov5", "custom", path=weight_file_path, source="local")
-        # model = torch.hub.load("ultralytics/yolov5", "custom", path=weight_file_path)
+        # model = torch.hub.load("/yolov5", "custom", path=weight_file_path, source="local")
+        model = torch.hub.load("ultralytics/yolov5", "custom", path=weight_file_path)
         model.eval()
 
         use_fp16: bool = JETSON_FP16 and get_device_hardware_brand() == DeviceHardwareBrand.JETSON_NANO
