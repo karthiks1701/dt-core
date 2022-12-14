@@ -151,15 +151,16 @@ class LaneControllerNode(DTROS):
         self.iter_ = 0
         
         #NOTE
-        #self.target_states = np.array([  [0.15,0.0], [0.3,0.0], [0.3,0.4]  ]) ---  left turn
-        self.target_states = np.array([  [0.12,0.0], [0.12,-0.3], [0.12,-0.4]  ]) #-- right turn
+        self.target_states = np.array([  [0.09,0.0], [0.12,0.0], [0.15,0.0], [0.3,0.2], [0.3,0.3], [0.3,0.4] ,  [0.3,0.5]  ]) #---  left turn
+        #self.target_states = np.array([  [0.09,0.0], [0.15,0.0], [0.15,-0.15], [0.15,-0.25], [0.15,-0.30], [0.15, -0.4]  ]) #-- right turn
+        #self.target_states =  np.array([  [0.1,0.0], [0.15,0.0], [0.2,0.0], [0.25,0.0] ]) #-- straoigth 
         self.len_states = self.target_states.shape[0]
         print(self.len_states)
         self.final_state = 0 
         
         # subscirber
-        self.sub_encoder_left = message_filters.Subscriber("~left_wheel_encoder_node/tick", WheelEncoderStamped)
-        self.sub_encoder_right = message_filters.Subscriber("~right_wheel_encoder_node/tick", WheelEncoderStamped)
+        self.sub_encoder_left = message_filters.Subscriber("/korra/left_wheel_encoder_node/tick", WheelEncoderStamped)
+        self.sub_encoder_right = message_filters.Subscriber("/korra/right_wheel_encoder_node/tick", WheelEncoderStamped)
         
         self.ts_encoders = message_filters.ApproximateTimeSynchronizer(
             [self.sub_encoder_left, self.sub_encoder_right], 1, 1
@@ -284,7 +285,7 @@ class LaneControllerNode(DTROS):
         # Add commands to car message
             #vpx = 0.5*(self.target_states[self.iter_][0]-self.x - self.alpha)
             #vpy = 0.06*(self.target_states[self.iter_][1]-self.y)
-            car_control_msg.v = 0.1
+            car_control_msg.v = 0.12
             car_control_msg.omega = self.compute_omega(self.target_states[self.iter_],self.x,self.y,self.yaw,dt)
             #= vpy/self.alpha
             
@@ -470,26 +471,27 @@ class LaneControllerNode(DTROS):
         return omega
 
     def check_point(self,current_point,target_point):
-        threshold = 0.1
-        threshold_x = 0.08
+        threshold = 0.08
+        threshold_x = 0.05
         dist_x = np.zeros((1,2))
         dist_x[0,0] = (current_point[0]-self.alpha) - target_point[0]
         dist_x[0,1] = (current_point[1]) - target_point[1]
+        dist = np.sqrt(((current_point[0]-self.alpha) - target_point[0])**2 + ((current_point[1]-self.alpha) - target_point[1])**2 )
+
         if self.iter_ == (self.len_states - 1):
 
-            if abs(dist_x[0,1]) < threshold_x:
+            if abs(dist) < threshold_x:
                 return True
 
             return False
 
         else:
-            dist = np.sqrt(((current_point[0]-self.alpha) - target_point[0])**2 + ((current_point[1]-self.alpha) - target_point[1])**2 )
             print("check if we reached ")
             print("dist ",dist)
             print(" current and target point",current_point,target_point)
             print("-"*10)
 
-            if (abs(dist_x[0,0])) > threshold_x or (dist) < threshold:
+            if (abs(dist_x[0,0])) < threshold_x or (dist) < threshold:
                 return True
 
             return False
